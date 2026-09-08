@@ -72,15 +72,14 @@ function formatTimeRange(startDate, endDate) {
   };
 }
 
-const WEDDING_DATE = new Date("2026-10-03T20:30:00"); // ISO date used by the countdown — EDIT THIS to the real date/time.
-const WEEDING_END_DATE = new Date("2026-10-03T22:00:00");
+const WEDDING_DATE = new Date("2026-10-16T21:00:00"); // ISO date used by the countdown — EDIT THIS to the real date/time.
+const WEEDING_END_DATE = new Date("2026-10-16T22:30:00");
 
 const WEDDING_CONFIG = {
   // ---------- Couple ----------
   couple: {
-    bride: { en: "Safaa", ar: "صفاء" },
-    groom: { en: "Ahmed", ar: "أحمد" },
-    // Shown as "Ahmed & Safaa" — order for each language
+    bride: { en: "Ruqaya", ar: "رقية" },
+    groom: { en: "Mustafa", ar: "مصطفى" },
     order: { en: ["groom", "bride"], ar: ["groom", "bride"] },
   },
 
@@ -110,10 +109,8 @@ const WEDDING_CONFIG = {
   guestMessage: {
     title: { en: "You're Invited", ar: "أنتم مدعوون" },
     body: {
-      // en: "With hearts full of joy, we invite you to share in the beginning of our forever. Your presence would mean the world to us as we celebrate this new chapter together.",
-      en: "As we take this next big step, we can’t imagine doing it without the people who mean the most to us. Come celebrate the beginning of our forever and share in a day full of love, joy, and new memories.",
-      // ar: "بقلوب مفعمة بالفرح، ندعوكم لمشاركتنا بداية حياتنا معًا. وجودكم معنا سيعني لنا الكثير ونحن نحتفل بهذا الفصل الجديد.",
-      ar: "ونحن نخطو هذه الخطوة الكبيرة في حياتنا، لا يمكننا تخيل هذا اليوم دون وجود الأشخاص الأقرب إلى قلوبنا. شاركونا بداية رحلتنا الأبدية، ولنتقاسم معاً يوماً يفيض بالحب والبهجة والذكريات السعيدة.",
+      en: "As we take this next big step, we can’t imagine doing it without the people who mean the most to us. Come celebrate this blessed day with us and share in a day full of love, joy, and new memories.",
+      ar: "ونحن نخطو هذه الخطوة الكبيرة في حياتنا، لا يمكننا تخيل هذا اليوم دون وجود الأشخاص الأقرب إلى قلوبنا. شاركونا هذا اليوم المبارك، ولنتقاسم معاً يوماً يفيض بالحب والبهجة والذكريات السعيدة.",
     },
   },
 
@@ -132,26 +129,29 @@ const WEDDING_CONFIG = {
   schedule: {
     title: { en: "Schedule of Events", ar: "برنامج الحفل" },
     items: [
-      { time: "8:30 PM", en: "Guest Arrival", ar: "استقبال الضيوف" },
-      { time: "8:45 PM", en: "Ceremony", ar: "حفل العقد" },
-      { time: "9:00 PM", en: "Photography", ar: "التصوير" },
-      // { time: "9:30 PM", en: "Dinner Reception", ar: "حفل العشاء" },
-      { time: "10:00 PM", en: "Farewell", ar: "الوداع" },
+      { time: "9:00 PM", en: "Guest Arrival", ar: "استقبال الضيوف" },
+      { time: "9:15 PM", en: "Nikkah Ceremony", ar: "كتب الكتاب" },
+      { time: "10:00 PM", en: "Welcome Drinks", ar: "تقديم واجب الضيافة" },
+      { time: "10:15 PM", en: "Photography", ar: " الصور التذكارية" },
+      { time: "10:30 PM", en: "Farewell", ar: "المغادرة" },
     ],
   },
 
   // ---------- Location ----------
   location: {
     title: { en: "Venue", ar: "المكان" },
-    venueName: { en: "Al Nour Hall, El-Moshir Tantawy Mosque", ar: "قاعة النور مسجد المشير طنطاوي" },
+    venueName: {
+      en: "Al-Farouk Mosque Halls (Al Malakia)",
+      ar: "قاعات مسجد الفاروق ( القاعة الملكية )",
+    },
     address: {
-      en: "El-Moshir Tantawy Axis, Fifth Settlement, New Cairo, Egypt",
-      ar: "محــور المشير طنطاوى بالتجمــع الخامــس",
+      en: "Al-Farouk Mosque Halls | Sheraton | Heliopolis",
+      ar: "قاعات الفاروق | شيراتون | مصر الجديدة",
     },
     // Used to build the embedded map + "open in maps" link.
     // Replace with the real address or "lat,lng".
     // mapQuery: "El-Mosheer Tantawy Mosque",
-    mapQuery: "30.017616828375548, 31.38366960736208",
+    mapQuery: "قاعات الفاروق",
     image: "assets/mosque-image.webp",
   },
 
@@ -159,8 +159,6 @@ const WEDDING_CONFIG = {
   dressCode: {
     title: { en: "Dress Code", ar: "الزي المفضل" },
     body: {
-      // en: "We kindly invite you to dress in elegant, modest attire. Soft neutrals, ivory, and gold tones are especially welcome.",
-      // ar: "يسعدنا أن يحضر ضيوفنا الكرام بإطلالة أنيقة ومحتشمة. الألوان الهادئة والعاجية والذهبية موضع ترحيب خاص.",
       en: "We kindly invite you to dress in elegant, modest attire. Soft neutrals tones are especially welcome.",
       ar: "يسعدنا أن يحضر ضيوفنا الكرام بإطلالة أنيقة ومحتشمة. الألوان الهادئة موضع ترحيب خاص.",
     },
@@ -178,8 +176,7 @@ const WEDDING_CONFIG = {
     buttonLabel: { en: "Confirm Attendance", ar: "أكد حضورك" },
     // ⚠️ REQUIRED: paste your deployed Google Apps Script Web App URL here.
     // See README.md for the exact Apps Script code this form expects.
-    scriptURL:
-      "https://script.google.com/macros/s/AKfycbxnwgSNnIVSTu1NJq1gp8odAybf6iSQV-esszSPdRuPIV7YX5oX6TEVfWzWQ9iglq-pEQ/exec",
+    scriptURL: "",
     form: {
       name: { en: "Full Name", ar: "الاسم الكامل" },
       guests: { en: "Number of Guests", ar: "عدد الضيوف" },

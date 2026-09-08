@@ -117,7 +117,8 @@ Invite.i18n = (function () {
   }
 
   function init() {
-    apply(detectLang());
+    // apply(detectLang());
+    apply("ar"); // default to Arabic
     const btn = document.getElementById("lang-toggle");
     if (btn) btn.addEventListener("click", toggle);
   }
