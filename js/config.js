@@ -157,10 +157,10 @@ const WEDDING_CONFIG = {
 
   // ---------- Dress code ----------
   dressCode: {
-    title: { en: "Dress Code", ar: "الزي المفضل" },
+    title: { en: "Clarification", ar: "توضيح" },
     body: {
-      en: "We kindly invite you to dress in elegant, modest attire. Soft neutrals tones are especially welcome.",
-      ar: "يسعدنا أن يحضر ضيوفنا الكرام بإطلالة أنيقة ومحتشمة. الألوان الهادئة موضع ترحيب خاص.",
+      en: "The hall is divided into two sections with a partition, one for men and one for women",
+      ar: "القاعة مقسمة قسمين بينهما فاصل قسم للرجال وقسم للنساء",
     },
   },
 
@@ -176,7 +176,8 @@ const WEDDING_CONFIG = {
     buttonLabel: { en: "Confirm Attendance", ar: "أكد حضورك" },
     // ⚠️ REQUIRED: paste your deployed Google Apps Script Web App URL here.
     // See README.md for the exact Apps Script code this form expects.
-    scriptURL: "",
+    scriptURL:
+      "https://script.google.com/macros/s/AKfycbzu0HPqtFvUBPxtn12GjrcDuNxzL9_HrLJ0Zm1tpCnitO6gCxjUYQjcVKspd0IYyfb1Sw/exec",
     form: {
       name: { en: "Full Name", ar: "الاسم الكامل" },
       guests: { en: "Number of Guests", ar: "عدد الضيوف" },

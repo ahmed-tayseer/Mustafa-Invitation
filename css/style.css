@@ -530,7 +530,7 @@ html:lang(en) .util-btn {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(2.65rem, 9vw, 3.6rem);
-  margin: 10px 0 10px;
+  margin: 10px 0 14px;
   color: var(--color-ink);
   letter-spacing: 0.01em;
   font-style: italic;
@@ -539,6 +539,10 @@ html:lang(en) .util-btn {
 html[dir="rtl"] .hero-names {
   font-style: normal;
   letter-spacing: normal;
+}
+/* for english text */
+html[dir="ltr"] .hero-names {
+  font-size: clamp(2.55rem, 9vw, 3.6rem);
 }
 
 .eyebrow {
