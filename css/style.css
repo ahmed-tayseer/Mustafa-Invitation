@@ -1,0 +1,1100 @@
+/* ==========================================================================
+   WEDDING INVITATION — STYLES
+   Palette: ivory / cream with antique-gold accent
+   Signature motif: 8-point gold star (echoes Islamic geometric ornament)
+   ========================================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap");
+
+:root {
+  /* -------- Color tokens -------- */
+  --color-bg: #fbf6ec; /* ivory */
+  --color-bg-alt: #f3ead8; /* deeper cream, used for alternating sections */
+  --color-card: #fffdf8; /* warm white, cards & modal */
+  --color-ink: #3a2e22; /* warm dark umber — primary text */
+  --color-ink-soft: #7a6a55; /* secondary text */
+  --color-gold: #b08d57; /* accent gold */
+  --color-gold-deep: #8c6f42; /* hover / emphasis */
+  --color-line: rgba(176, 141, 87, 0.35);
+  --color-envelope-paper: #f5ead2; /* warm envelope stock, slightly deeper than --color-bg */
+  --color-envelope-glow: 224, 178, 110; /* RGB triplet reused in rgba() for the seam glow */
+
+  /* -------- Type -------- */
+  /* --font-display: "Cormorant Garamond", serif; */
+  --font-display: "Great Vibes", cursive;
+  /* --font-body: "Jost", sans-serif; */
+  --font-body: "Lora", sans-serif;
+
+  /* -------- Layout -------- */
+  --max-w: 640px;
+  /* --section-pad-y: clamp(56px, 10vh, 96px); */
+  --section-pad-y: clamp(28px, 5vh, 48px);
+  /* --section-pad-y: clamp(20px, 3.75vh, 36px); */
+  --section-pad-x: 24px;
+  --radius: 14px;
+
+  /* -------- Envelope animation durations (mirrored in js/envelope.js) -------- */
+  --dur-seal: 260ms;
+  --dur-card: 750ms;
+  --dur-flap: 2500ms;
+  --dur-overlay: 300ms;
+}
+
+html[dir="rtl"] {
+  --font-display: "Aref Ruqaa", serif;
+  --font-body: "Cairo", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  /* background: var(--color-bg-alt); */
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.section-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--section-pad-y) var(--section-pad-x);
+  text-align: center;
+}
+
+.section {
+  position: relative;
+}
+.section:nth-of-type(even) {
+  background: var(--color-bg-alt);
+  /* background: var(--color-bg); */
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 6vw, 2.3rem);
+  margin: 0 0 22px;
+  color: var(--color-ink);
+}
+
+.body-text {
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+.centered {
+  max-width: 46ch;
+  margin-inline: auto;
+}
+
+.ornament {
+  margin: 18px auto;
+  opacity: 0.9;
+}
+
+/* ==========================================================================
+   UTILITY FLOATING BUTTONS (language + music)
+   ========================================================================== */
+.utility-buttons {
+  position: fixed;
+  top: 16px;
+  inset-inline-end: 16px;
+  z-index: 60;
+  display: flex;
+  gap: 10px;
+}
+
+html:lang(en) .util-btn {
+  font-family: "Aref Ruqaa", serif;
+}
+
+.util-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  background: rgba(255, 253, 248, 0.85);
+  backdrop-filter: blur(6px);
+  color: var(--color-gold-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 14px rgba(58, 46, 34, 0.08);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+.util-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(58, 46, 34, 0.14);
+}
+.util-btn:active {
+  transform: translateY(0);
+}
+
+.icon {
+  display: block;
+}
+
+/* ==========================================================================
+   ENVELOPE INTRO
+   Full-bleed "envelope back": four paper panels meet at the center in an X
+   fold. A warm gold glow radiates from the wax seal along the seams; the
+   left/right panels carry an embossed floral overlay. The top panel is the
+   flap and rotates open on click.
+   ========================================================================== */
+.envelope-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: var(--color-envelope-paper);
+  transition:
+    opacity var(--dur-overlay) ease,
+    visibility 0s linear var(--dur-overlay);
+}
+.envelope-screen.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.envelope {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: var(--color-envelope-paper);
+  /* background-image: url(../assets/hero.webp); */
+  background-size: cover;
+  background-position: center;
+  perspective: 2000px;
+}
+
+/* -------- the four back panels -------- */
+.env-panel {
+  position: absolute;
+  inset: 0;
+  background: var(--color-envelope-paper);
+  transition: transform var(--dur-flap) cubic-bezier(0.25, 1, 0.5, 1);
+}
+/* seam glow: a soft gold radial glow shared by every panel, centered on the
+   point where all four meet (i.e. right behind the wax seal) */
+.env-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(var(--color-envelope-glow), 0.6) 0%,
+    rgba(var(--color-envelope-glow), 0.25) 11%,
+    rgba(var(--color-envelope-glow), 0) 47%
+  );
+  pointer-events: none;
+}
+
+.env-panel--left {
+  transform-origin: left center;
+  clip-path: polygon(0 0, 0 100%, 50% 50%);
+  background-image: linear-gradient(100deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 45%);
+}
+.env-panel--right {
+  transform-origin: right center;
+  clip-path: polygon(100% 0, 100% 100%, 50% 50%);
+  background-image: linear-gradient(260deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 45%);
+}
+.env-panel--bottom {
+  transform-origin: bottom center;
+  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
+  background-image: linear-gradient(0deg, rgba(58, 46, 34, 0.05), rgba(58, 46, 34, 0) 40%);
+}
+
+/* crisp corner-to-corner seam lines (see the inline <svg class="env-seams"> in the
+   markup) — sits above the static side/bottom panels but under the flap, so the
+   flap's own edge forms the top half of the "X" once it's back in the closed state */
+.env-seams {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* embossed floral overlay along the outer edge of the side panels —
+   swap in the real asset at assets/floral-emboss.webp (repeats vertically).
+   Path is ../assets/... because this stylesheet lives in css/, not the site root. */
+.env-panel--left::after,
+.env-panel--right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-y;
+  background-size: 107px auto;
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.env-panel--left::after {
+  background-image: url("../assets/floral-emboss-mirror.webp");
+  background-position: left center;
+  left: 5%;
+}
+.env-panel--right::after {
+  background-image: url("../assets/floral-emboss.webp");
+  background-position: right center;
+  right: 5%;
+}
+
+/* .env-flap-top::after,
+.env-panel--bottom::after {
+  background-image: url("../assets/floral-emboss-bottom.webp");
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  background-size: 113px auto;
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+  pointer-events: none;
+  transform: rotate(12deg);
+}
+.env-panel--bottom::after {
+  background-position: bottom right;
+  right: 24%;
+  bottom: 18%;
+}
+.env-flap-top::after {
+  background-position: top;
+  right: 38%;
+  top: 17%;
+} */
+
+/* -------- animated top flap -------- */
+.env-flap-top {
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 45%);
+  z-index: 2;
+}
+
+/* -------- wax seal -------- */
+.env-seal {
+  position: absolute;
+  /* top: 46%; */
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: min(30vw, 115px);
+  transition:
+    opacity var(--dur-seal) ease,
+    transform var(--dur-seal) ease;
+  filter: drop-shadow(0 6px 14px rgba(58, 46, 34, 0.35));
+}
+.env-seal-img {
+  width: 100%;
+  display: block;
+}
+
+/* --- opening state: all 4 panels open slightly together --- */
+/* Hide seam lines immediately when envelope starts opening */
+.envelope-screen.is-opening .env-seams,
+.envelope-screen.is-open .env-seams {
+  display: none;
+}
+
+.envelope-screen.is-opening .env-seal,
+.envelope-screen.is-open .env-seal {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.4);
+}
+
+.envelope-screen.is-opening .env-flap-top,
+.envelope-screen.is-open .env-flap-top {
+  transform: rotateX(-30deg);
+}
+.envelope-screen.is-opening .env-panel--bottom,
+.envelope-screen.is-open .env-panel--bottom {
+  transform: rotateX(30deg);
+}
+.envelope-screen.is-opening .env-panel--left,
+.envelope-screen.is-open .env-panel--left {
+  transform: rotateY(-30deg);
+}
+.envelope-screen.is-opening .env-panel--right,
+.envelope-screen.is-open .env-panel--right {
+  transform: rotateY(30deg);
+}
+
+/* --- skip state --- */
+.envelope-screen.is-skip .env-seal,
+.envelope-screen.is-skip .env-panel,
+.envelope-screen.is-skip .env-flap-top,
+.envelope-screen.is-skip {
+  transition-duration: 0s !important;
+}
+
+.envelope-hint {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom, 28px));
+  transform: translateX(-50%);
+  z-index: 4;
+  white-space: nowrap;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--color-gold-deep);
+  animation: pulse-hint 2.4s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hint-arrow {
+  display: block;
+  animation: bounce-up 1.8s ease-in-out infinite;
+}
+
+@keyframes bounce-up {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse-hint {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   CENTER LIGHT BLOOM
+   ========================================================================== */
+.env-center-light {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(60vw, 360px);
+  height: min(60vw, 360px);
+  transform: translate(-50%, -50%) scale(0.2);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    #ffffff 0%,
+    rgba(255, 245, 220, 0.95) 30%,
+    rgba(224, 178, 110, 0.7) 60%,
+    rgba(245, 234, 210, 0) 75%
+  );
+  opacity: 0;
+  z-index: 0; /* Sits behind the envelope panels */
+  pointer-events: none;
+  filter: blur(6px);
+  transition:
+    opacity var(--dur-flap) ease-out,
+    transform var(--dur-flap) cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Light appears and expands when panels rotate open */
+.envelope-screen.is-opening .env-center-light,
+.envelope-screen.is-open .env-center-light {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+/* Instant hide on skip */
+.envelope-screen.is-skip .env-center-light {
+  transition-duration: 0s !important;
+}
+
+/* ==========================================================================
+   SITE REVEAL
+   ========================================================================== */
+.site {
+  animation: site-fade-in 700ms ease both;
+  overflow-x: clip;
+  position: relative;
+  width: 100%;
+}
+@keyframes site-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-flap,
+  .envelope-card,
+  .envelope-seal,
+  .envelope-screen,
+  .site {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  /* background: radial-gradient(circle at 50% 0%, rgba(176, 141, 87, 0.1), transparent 55%), var(--color-bg); */
+  /* background-image:
+    radial-gradient(circle at 50% 0%, rgba(176, 141, 87, 0.1), transparent 55%), url(./action-img-min.webp); */
+  /* background-image: url(../assets/hero1.webp); */
+  background-image: url(../assets/hero.webp);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  /* overflow: visible; */
+}
+
+/* Fades the bottom of the hero photo into the flat ivory that the first
+   torn-divider is colored with, so the wave reads as emerging from the
+   photo rather than sitting on top of it as a disconnected white shape. */
+.hero-section::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 18%;
+  background: linear-gradient(to bottom, rgba(251, 246, 236, 0) 0%, var(--color-bg) 85%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 4; /* stays above the fade layer even if it overlaps on short viewports */
+  padding-top: var(--section-pad-y);
+}
+
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.24rem, 4vw, 1.9rem);
+  color: var(--color-gold-deep);
+  letter-spacing: 0.18em;
+  /* margin: 4px 0 6px; */
+  /* margin: 0 0 14px; */
+  margin: 0 0 0px;
+}
+
+.hero-names {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 3.6rem);
+  margin: 10px 0 10px;
+  color: var(--color-ink);
+  letter-spacing: 0.01em;
+  font-style: italic;
+}
+/* for arabic text */
+html[dir="rtl"] .hero-names {
+  font-style: normal;
+  letter-spacing: normal;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 600;
+  /* font-size: clamp(1.3rem, 4.5vw, 1.6rem); */
+  font-size: clamp(1.14rem, 4.5vw, 1.6rem);
+  margin: 4px 0 0;
+  margin: 0px 0 0;
+  color: var(--color-gold-deep);
+  letter-spacing: 0.08em;
+  /* letter-spacing: 0.04em; */
+}
+
+/* select .ornament that after eyebrow class */
+html[dir="rtl"] .eyebrow + .ornament {
+  margin-bottom: 10px;
+}
+
+.hero-date {
+  margin-top: 0px;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  font-size: 1rem;
+}
+
+#guest-message-start {
+  font-family: "Aref Ruqaa", serif;
+  margin: -1.8rem 0 2.5rem;
+  /* margin: -29px 0 40px; */
+}
+/* #guest-message-start::after {
+  content: "";
+  position: absolute;
+  bottom: -6%;
+  left: 50%;
+  width: min(120px, 40%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+} */
+
+/* Flowers in the bottom */
+.right-flowers {
+  position: absolute;
+  /* bottom: -6%; */
+  bottom: -90px;
+  right: -5px;
+  width: 28%;
+  z-index: 3;
+  pointer-events: none;
+}
+.left-flowers {
+  position: absolute;
+  /* bottom: -6%; */
+  bottom: -90px;
+  left: -5px;
+  width: 28%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   COUNTDOWN
+   ========================================================================== */
+/* .countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 420px;
+  margin: 0 auto;
+} */
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0px;
+  max-width: 260px;
+  margin: 0 auto;
+}
+/* .cd-unit {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 16px 4px;
+} */
+.cd-unit {
+  padding: 6px 0px 0px;
+}
+.cd-number {
+  display: block;
+  font-family: var(--font-display);
+  /* font-size: clamp(1.6rem, 6vw, 2.1rem); */
+  font-size: clamp(2.4rem, 6vw, 2.8rem);
+  font-weight: 600;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.cd-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+/* ==========================================================================
+   SCHEDULE — vertical timeline
+   ========================================================================== */
+.timeline {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 420px;
+  /* text-align: start; */
+  position: relative;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  /* inset-inline-start: 5px; */
+  inset-inline-start: 29%;
+  width: 1px;
+  background: var(--color-line);
+}
+.timeline-item {
+  position: relative;
+  padding-inline-start: 28px;
+  padding-bottom: 26px;
+}
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+.timeline-dot {
+  position: absolute;
+  /* inset-inline-start: 0; */
+  inset-inline-start: calc(29% - 5px);
+  top: 5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-card);
+  border: 2px solid var(--color-gold);
+}
+.timeline-time {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-gold-deep);
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+.timeline-event {
+  color: var(--color-ink);
+  font-size: 0.98rem;
+}
+
+/* ==========================================================================
+   LOCATION
+   ========================================================================== */
+.venue-name {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.venue-address {
+  color: var(--color-ink-soft);
+  margin: 0 0 22px;
+  font-size: 0.95rem;
+}
+.venue-image-wrap {
+  /* border-radius: var(--radius); */
+  overflow: hidden;
+  /* border: 1px solid var(--color-line); */
+  /* margin-bottom: 18px; */
+  margin: 0 auto 18px;
+  width: 90%;
+}
+.venue-image {
+  width: 100%;
+  height: auto;
+}
+
+.map-card {
+  display: block;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  text-decoration: none;
+  color: var(--color-ink);
+  background: var(--color-card);
+  position: relative;
+}
+.map-embed {
+  width: 100%;
+  height: 180px;
+  border: 0;
+  display: block;
+  pointer-events: none; /* the whole card is one clickable link to Google Maps */
+}
+.map-card-label {
+  display: block;
+  padding: 12px;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--color-gold-deep);
+  font-weight: 500;
+  border-top: 1px solid var(--color-line);
+}
+
+/* ==========================================================================
+   BUTTON
+   ========================================================================== */
+.btn-primary {
+  appearance: none;
+  border: 1px solid var(--color-gold);
+  background: linear-gradient(180deg, #c7a574, var(--color-gold));
+  color: #fff;
+  padding: 14px 38px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  box-shadow: 0 8px 22px rgba(176, 141, 87, 0.35);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(176, 141, 87, 0.45);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   CLOSING
+   ========================================================================== */
+.closing-section {
+  padding-bottom: calc(var(--section-pad-y) + 70px);
+}
+.closing-line {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--color-ink);
+  margin: 0;
+}
+html[dir="rtl"] .closing-line {
+  font-style: normal;
+}
+.closing-names {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  color: var(--color-gold-deep);
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   RSVP MODAL
+   ========================================================================== */
+#rsvp-subtitle {
+  margin-bottom: 18px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(58, 46, 34, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: overlay-fade 220ms ease both;
+}
+@keyframes overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--color-card);
+  border-radius: 20px 20px 0 0;
+  padding: 30px 24px 34px;
+  animation: modal-up 260ms cubic-bezier(0.22, 0.85, 0.32, 1) both;
+}
+@media (min-width: 560px) {
+  .modal-overlay {
+    align-items: center;
+  }
+  .modal-card {
+    border-radius: 18px;
+  }
+}
+@keyframes modal-up {
+  from {
+    transform: translateY(28px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-bg-alt);
+  color: var(--color-ink-soft);
+  font-size: 1.3rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#rsvp-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.rsvp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: start;
+}
+.field span,
+.field legend {
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+  padding: 0;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  resize: vertical;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 1px;
+}
+
+.field-radio {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+}
+.radio-option input {
+  accent-color: var(--color-gold);
+  width: 16px;
+  height: 16px;
+}
+
+.form-status {
+  min-height: 1.2em;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--color-gold-deep);
+  margin: 2px 0 0;
+}
+.form-status.is-error {
+  color: #a34434;
+}
+
+/* ==========================================================================
+   FLOATING BOTTOM NAV
+   ========================================================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: rgba(255, 253, 248, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(58, 46, 34, 0.14);
+  padding: 6px;
+}
+.bottom-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bottom-nav-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: var(--color-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+.bottom-nav-btn.is-active {
+  background: var(--color-gold);
+  color: #fff;
+}
+
+/* ==========================================================================
+   TORN-PAPER SVG DIVIDERS
+   Each divider is a full-width strip: the SVG shape (currentColor) is the
+   *previous* section's color torn along a jagged bottom edge; the div's
+   own background-color is the *next* section's color showing through the
+   gaps. A 1px overlap and a hair of SVG overscan are added below to stop
+   browsers from leaving a subpixel hairline between adjacent sections.
+   ========================================================================== */
+.torn-divider {
+  display: block;
+  width: 100%;
+  height: 56px;
+  line-height: 0;
+  /* overlap the sections on either side by 1px so rounding/subpixel gaps
+     never leave a hairline of the page background showing through */
+  margin-block: -1px;
+}
+.torn-divider svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* filter: drop-shadow(0 3px 5px rgba(92, 77, 77, 0.12)); */
+  filter: drop-shadow(0 4px 3px rgba(58, 46, 34, 0.1));
+  /* extend a hair past the container edges to close any anti-aliasing seam
+     along the wave path itself */
+  transform: scale(1.004);
+  transform-origin: center;
+}
+/* previous section = ivory (--color-bg), next section = cream (--color-bg-alt) */
+.torn-divider--to-alt {
+  background-color: var(--color-bg-alt);
+  color: var(--color-bg);
+}
+/* previous section = cream (--color-bg-alt), next section = ivory (--color-bg) */
+.torn-divider--to-bg {
+  background-color: var(--color-bg);
+  color: var(--color-bg-alt);
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (min-width: 720px) {
+  :root {
+    --section-pad-x: 32px;
+  }
+  .countdown-grid {
+    max-width: 260px;
+  }
+}
+
+@media (max-width: 360px) {
+  .countdown-grid {
+    gap: 0px;
+  }
+  .cd-number {
+    font-size: 1.4rem;
+  }
+}
+
+/* ==========================================================================
+   SCROLL REVEAL
+   Each section (other than the hero, which is already visible on load)
+   fades and rises into place the first time it enters the viewport.
+   Gated behind body.reveal-ready, which js/reveal.js adds — so content is
+   fully visible by default if JavaScript fails to run.
+   ========================================================================== */
+body.reveal-ready .section:not(.hero-section),
+body.reveal-ready .torn-divider.reveal-pair {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 800ms ease,
+    transform 800ms ease;
+  will-change: opacity, transform;
+}
+body.reveal-ready .section:not(.hero-section).is-visible,
+body.reveal-ready .torn-divider.reveal-pair.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.reveal-ready .section:not(.hero-section),
+  body.reveal-ready .torn-divider.reveal-pair {
+    transition-duration: 1ms !important;
+    transform: none !important;
+  }
+}
